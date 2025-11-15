@@ -1,0 +1,34 @@
+from rest_framework import serializers
+from .models import Event, Speaker, Registration, ContactMessage
+
+class EventSerializer(serializers.ModelSerializer):
+    registered_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Event
+        fields = '__all__'
+    
+    def get_registered_count(self, obj):
+        return obj.registrations.filter(status='confirmed').count()
+
+
+class SpeakerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Speaker
+        fields = '__all__'
+
+
+class RegistrationSerializer(serializers.ModelSerializer):
+    event_title = serializers.CharField(source='event.title', read_only=True)
+    
+    class Meta:
+        model = Registration
+        fields = '__all__'
+        read_only_fields = ['status', 'registered_at']
+
+
+class ContactMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactMessage
+        fields = '__all__'
+        read_only_fields = ['is_read', 'created_at']
